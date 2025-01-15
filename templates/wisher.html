@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, height=device-height, user-scalable=no"
+		/>
+		<title>Untl</title>
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap');
+
+
+			.main_wrap {
+				 height: 100vh;
+				color: white;
+				display: flex;
+				flex-direction: column;
+				/*overflow: visible;*/
+				overflow: hidden;
+				background: url('/tan/bak');
+			}
+
+			.name_wrap {
+				display: flex;
+				flex-direction: column;
+				width: 100vw;
+			}
+
+			.nm {
+				margin: 30px;
+				height: 100px;
+				/*border-style: solid;*/
+				/*border-color: white;*/
+				text-align: center;
+				display: flex;
+				/* flex-direction: column;
+          width: 100vw; */
+				/*border-radius: 5vh;*/
+				/*border-width: 1vw;*/
+				color: white;
+				place-content: center;
+				font-size: 4vh;
+			}
+
+			/*.card_wrap {*/
+			/*	display: flex;*/
+			/*	flex-direction: column;*/
+			/*	width: 100vw;*/
+   /*     padding-bottom: 60px;*/
+			/*}*/
+
+			.card_wrap {
+			    overflow: hidden;
+                top: 76px;
+                position: absolute;
+                place-self: center;
+                display: flex;
+                flex-direction: column;
+                max-width: 100vw;
+                align-items: center;
+                /*min-width: 450px;*/
+			}
+
+			.card_wshr {
+                transform: rotate(5deg);
+                height: 38px;
+                width: 124px;
+                /* border-radius: 5vh; */
+                /* border-width: 0.5vw; */
+                /* border-style: solid; */
+                font-size: 9px;
+                position: absolute;
+                top: 73px;
+                right: 28px;
+                padding: 2px;
+			}
+
+			.btn_wr {
+			    margin-top: 125px;
+				display: flex;
+				flex-direction: row;
+				height: 10vh;
+				width: 100vw;
+				overflow: hidden;
+				justify-content: space-around;
+			}
+
+			.mn_btn {
+                align-self: center;
+                align-content: center;
+                    margin-top: 3.5vh;
+                    height: 7vh;
+                  border: 0;
+                  padding: 0 20px;
+                  font-size: 4vh;
+                  color: #fff;
+                  text-shadow: 1px 1px 1px #000;
+                  border-radius: 8vw;
+                  background-image: radial-gradient(circle, rgba(116,30,255,1) 10%, rgba(112,0,209,1) 55%, rgba(175,184,238,1) 98%);
+                  box-shadow:
+                    inset 2px 2px 3px rgba(255, 255, 255, 0.6),
+                    inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+                }
+
+			/* general styling */
+			:root {
+				scrollbar-width: none;
+				-ms-overflow-style: none;
+				--font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+			}
+
+			:root::-webkit-scrollbar {
+				display: none;
+			}
+
+			body {
+				--color: #000000; /* var(--text-color) */
+				scrollbar-width: none;
+				color: var(--color);
+				display: flex;
+				overflow: hidden;
+				transition: none;
+				user-select: none;
+			}
+
+			* {
+				padding: 0;
+				margin: 0;
+				box-sizing: border-box;
+				transition: color, background 0.4s ease-in-out;
+				font-family: var(--font-family);
+				font-size: 17px;
+				color: #000000;
+				user-select: none;
+				overflow: scroll;
+			}
+
+			*::-webkit-scrollbar {
+				display: none;
+			}
+
+			img,
+			svg {
+				max-width: 349px;
+                max-height: 222px;
+                display: block;
+			}
+		</style>
+		<link rel="stylesheet" href="./css.css" />
+	</head>
+	<body>
+		<script src="https://telegram.org/js/telegram-web-app.js"></script>
+		<div id="mnlt" class="main_wrap">
+			<div class="name_wrap">
+				<div id="ffid" class="nm">Нажми на печенье</div>
+			</div>
+			<div id="mwr" class="card_wrap">
+                <img id="mwshr" src="/tan/wsh.png" onclick="pred()">
+		    </div>
+		<script>
+			let tg = window.Telegram.WebApp;
+
+			let xhr = new XMLHttpRequest();
+
+			function clssd() {
+                let tg = window.Telegram.WebApp;
+                tg.close();
+            }
+
+            xhr.open("GET", "https://adbrand.pythonanywhere.com/getwish/" + String(tg.initDataUnsafe.user["id"]), false);
+            try {
+              xhr.send();
+              if (xhr.status != 200) {
+                //   console.log(xhr.status);
+              } else {
+                  let data = xhr.response;
+                  let jsdata = JSON.parse(data);
+                  console.log(jsdata);
+                  if (jsdata['pread'] == "1") {
+                        let m = document.getElementById('mwr');
+                        let txt = document.createElement('div');
+        				txt.setAttribute('class', 'card_wshr');
+        				txt.innerHTML = jsdata['pwish'];
+        				m.appendChild(txt);
+
+        				let mm = document.getElementById('mwshr');
+
+        				mm.setAttribute('src', '/tan/wimhg');
+        				mm.removeAttribute('onclick');
+
+        				let fake_wr = document.createElement("div");
+                        fake_wr.setAttribute("id", "btn_wr");
+                        fake_wr.setAttribute("class", "btn_wr");
+
+                        let btnn = document.createElement("div");
+                        btnn.setAttribute("id", "mbtn");
+                        btnn.setAttribute("class", "mn_btn");
+                        btnn.setAttribute("onclick", "clssd()");
+                        btnn.innerHTML = "Вернуться";
+                        fake_wr.appendChild(btnn);
+
+                        document.getElementById('mnlt').appendChild(fake_wr);
+                        document.getElementById('ffid').innerHTML = "Твое предсказание";
+                  }
+              }
+            } catch(err) {
+                // console.log(1);
+            }
+
+
+			function pred() {
+				let mm = document.getElementById('mwshr');
+
+				mm.setAttribute('src', '/tan/wimhg');
+				mm.removeAttribute('onclick');
+				let wtx = "";
+
+				xhr.open("GET", "https://adbrand.pythonanywhere.com/getwish/" + String(tg.initDataUnsafe.user["id"]), false);
+                try {
+                  xhr.send();
+                  if (xhr.status != 200) {
+                    //   console.log(xhr.status);
+                  } else {
+                      let data = xhr.response;
+                      let jsdata = JSON.parse(data);
+                      console.log(jsdata);
+                      if (jsdata['pwish'] != "None") {
+                          wtx = jsdata['pwish'];
+                      }
+                  }
+                } catch(err) {
+                    // console.log(1);
+                }
+
+				let m = document.getElementById('mwr');
+                let txt = document.createElement('div');
+				txt.setAttribute('class', 'card_wshr');
+				txt.innerHTML = wtx;
+				m.appendChild(txt);
+
+				xhr.open("GET", "https://adbrand.pythonanywhere.com/readwish/" + String(tg.initDataUnsafe.user["id"]), false);
+                try {
+                  xhr.send();
+                  if (xhr.status != 200) {
+                    //   console.log(xhr.status);
+                  } else {
+                  }
+                } catch(err) {
+                    // console.log(1);
+                }
+
+                let fake_wr = document.createElement("div");
+                fake_wr.setAttribute("id", "btn_wr");
+                fake_wr.setAttribute("class", "btn_wr");
+
+                let btnn = document.createElement("div");
+                btnn.setAttribute("id", "mbtn");
+                btnn.setAttribute("class", "mn_btn");
+                btnn.setAttribute("onclick", "clssd()");
+                btnn.innerHTML = "Вернуться";
+                fake_wr.appendChild(btnn);
+
+                document.getElementById('mnlt').appendChild(fake_wr);
+                document.getElementById('ffid').innerHTML = "Твое предсказание";
+			}
+		</script>
+	</body>
+</html>

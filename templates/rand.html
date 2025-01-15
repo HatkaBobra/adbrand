@@ -1,0 +1,384 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, user-scalable=no">
+    <title>Untl</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap');
+
+        .main_wrap {
+          height: 100vh;
+          color: white;
+          display: flex;
+          flex-direction: column;
+          overflow: visible;
+          overflow-x: hidden;
+          background: url('/tan/bak');
+        }
+
+        .name_wrap {
+          display: flex;
+          flex-direction: column;
+          width: 100vw;
+        }
+
+        .nm {
+        margin: 8px;
+        height: 50px;
+        /*border-style: solid;*/
+        /*border-color: white;*/
+        text-align: center;
+          width: 100vw;
+          /*border-radius: 5vh;*/
+          /*border-width: 1vw;*/
+          color: white;
+          place-content: center;
+          font-size: 31px;
+        }
+
+        .card_wrap {
+            overflow-y: visible;
+            margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          width: 100vw;
+        }
+
+
+        .fline_cw {
+          display: flex;
+          flex-direction: row;
+          height: 170px;
+          width: 100vw;
+          justify-content: center;
+          gap: 20px;
+          /*justify-content: space-around;*/
+        }
+
+        .sline_cw {
+            margin-top: 20px;
+          display: flex;
+          flex-direction: row;
+          width: 100vw;
+          justify-content: center;
+          gap: 15px;
+        }
+
+        .btn_wr {
+            overflow-y: visible;
+          display: flex;
+          flex-direction: row;
+          height: 20vh;
+          width: 100vw;
+          justify-content: space-around;
+        }
+
+        .mn_btn {
+        align-self: center;
+        align-content: center;
+            margin-top: 3.5vh;
+            height: 7vh;
+          border: 0;
+          padding: 0 20px;
+          font-size: 4vh;
+          color: #fff;
+          text-shadow: 1px 1px 1px #000;
+          border-radius: 8vw;
+          background-image: radial-gradient(circle, rgba(116,30,255,1) 10%, rgba(112,0,209,1) 55%, rgba(175,184,238,1) 98%);
+          box-shadow:
+            inset 2px 2px 3px rgba(255, 255, 255, 0.6),
+            inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .card_item {
+            height: 150px;
+            width: 143px;
+            width: 20vw;
+            display: flex;
+            background-size: cover;
+            opacity: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card_item_user {
+            height: 150px;
+            width: 20vw;
+            display: flex;
+            background-size: cover;
+            opacity: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card_ph {
+
+            max-height: 148px;
+            max-width: 140px;
+            /* width: inherit; */
+            position: absolute;
+        }
+
+        .card_mph {
+            max-height: 148px;
+            max-width: 140px;
+            padding: 2px;
+            position: absolute;
+            opacity: 0;
+        }
+
+      /* general styling */
+        :root {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            --font-family: "SF Pro Display",-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
+          }
+
+        :root::-webkit-scrollbar{
+            display: none;
+          }
+
+        body {
+              --color: #000000; /* var(--text-color) */
+              scrollbar-width: none;
+              color: var(--color);
+              display: flex;
+              overflow: scroll;
+              overflow: scroll;
+              transition: none;
+              user-select: none;
+          }
+
+
+        * {
+              padding: 0;
+              margin: 0;
+              box-sizing: border-box;
+              transition: color,background .4s ease-in-out;
+              font-family: var(--font-family);
+              font-size: 17px;
+              color: #000000;
+              user-select: none;
+              overflow: scroll;
+          }
+
+        *::-webkit-scrollbar{
+              display: none;
+          }
+
+        img,
+          svg {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+          }
+
+
+    </style>
+  </head>
+  <body>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <div id="mnlt" class="main_wrap">
+      <div class="name_wrap">
+        <div class="nm">Выбери 3 карты</div>
+      </div>
+      <div id="cwr" class="card_wrap">
+        <div id="ghh" class="fline_cw">
+        </div>
+        <div id="ghhd" class="sline_cw">
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+        let tg = window.Telegram.WebApp;
+        var cards = '';
+        tg.expand();
+
+        function getRandomInt(maxx) {
+          return Math.floor(Math.random() * maxx) + 1;
+        }
+
+        let cart = {
+            "cart1": "bash:Башня", "cart2": "chkub:Четверка кубков",
+            "cart3": "chmec:Четверка мечей", "cart4": "chpen:Четверка пентаклей",
+            "cart5": "chzh:Четверка жезлов", "cart6": "deskub:Десятка кубков",
+            "cart7": "desmec:Десятка мечей", "cart8": "despen:Десятка пентаклей",
+            "cart9": "deszh:Десятка жезлов", "cart10": "devkub:Девятка кубков",
+            "cart11": "devmec:Девятка мечей", "cart12": "devpen:Девятка пентаклей",
+            "cart13": "devzh:Девятка жезлов", "cart14": "dvkub:Двойка кубков",
+            "cart15": "dvmec:Двойка мечей", "cart16": "dvpen:Двойка пентаклей",
+            "cart17": "dvzh:Двойка жезлов", "cart18": "dya:Дьявол",
+            "cart19": "ier:Иерофант", "cart20": "imp:Император",
+            "cart21": "imps:Императрица", "cart22": "kosa:Колесница",
+            "cart23": "kofo:Фортуна", "cart24": "kkub:Король кубков",
+            "cart25": "kmec:Король мечей", "cart26": "kpen:Король пентаклей",
+            "cart27": "kzh:Король жезлов", "cart28": "kakub:Королева кубков",
+            "cart29": "kamec:Королева мечей", "cart30": "kapen:Королева пентаклей",
+            "cart31": "kazh:Королева жезлов", "cart32": "lun:Луна",
+            "cart33": "mag:Маг", "cart34": "mir:Мир",
+            "cart35": "ots:Отшельник", "cart36": "pzkub:Паж кубков",
+            "cart37": "pzmec:Паж мечей", "cart38": "pzpen:Паж пентаклей",
+            "cart39": "pzzh:Паж жезлов", "cart40": "posv:Повешенный",
+            "cart41": "pakub:Пятерка кубков", "cart42": "pamec:Пятерка мечей",
+            "cart43": "papen:Пятерка пентаклей", "cart44": "pazh:Пятерка жезлов",
+            "cart45": "rkub:Рыцарь кубков", "cart46": "rmec:Рыцарь мечей",
+            "cart47": "rpen:Рыцарь пентаклей", "cart48": "rzh:Рыцарь жезлов",
+            "cart49": "skub:Семерка кубков", "cart50": "smec:Семерка мечей",
+            "cart51": "spen:Семерка пентаклей", "cart52": "szh:Семерка жезлов",
+            "cart53": "shkub:Шестерка кубков", "cart54": "shmec:Шестерка мечей",
+            "cart55": "shpen:Шестерка пентаклей", "cart56": "shzh:Шестерка жезлов",
+            "cart57": "sht:Шут", "cart58": "sil:Сила",
+            "cart59": "smr:Смерть", "cart60": "sol:Солнце",
+            "cart61": "sprv:Справедливость", "cart62": "ssud:Суд",
+            "cart63": "trkub:Тройка кубков", "cart64": "trmec:Тройка мечей",
+            "cart65": "trpen:Тройка пентаклей", "cart66": "trzh:Тройка жезлов",
+            "cart67": "tkub:Туз кубков", "cart68": "tmec:Туз мечей",
+            "cart69": "tpen:Туз пентаклей", "cart70": "tzh:Туз жезлов",
+            "cart71": "umrn:Умеренность", "cart72": "vlub:Влюбленные",
+            "cart73": "vkub:Восьмерка кубков", "cart74": "vmec:Восьмерка мечей",
+            "cart75": "vpen:Восьмерка пентаклей", "cart76": "vzh:Восьмерка жезлов",
+            "cart77": "zhrt:Жрица", "cart78": "zvzd:Звезда",
+        }
+
+        var exll = [];
+
+
+        [1, 2, 3].forEach(function() {
+            let mm = document.getElementById('ghh');
+            let rnm = getRandomInt(78);
+            do {
+              rnm = getRandomInt(78);
+            } while (exll.find((element) => element == rnm) != undefined);
+            exll.push(rnm);
+            let tmp_cr = document.createElement("div");
+            tmp_cr.setAttribute("id", "cart" + String(rnm) + "a");
+            tmp_cr.setAttribute("class", "card_item");
+
+            let tmp_pq = document.createElement("img");
+            tmp_pq.setAttribute("id", "cart" + String(rnm) + "m");
+            tmp_pq.setAttribute("class", "card_mph");
+            let tst = cart["cart" + String(rnm)].split(':')[0];
+            tmp_pq.setAttribute("src", "/tan/" + tst);
+            tmp_cr.appendChild(tmp_pq);
+
+            let tmp_pw = document.createElement("img");
+            tmp_pw.setAttribute("id", "cart" + String(rnm));
+            tmp_pw.setAttribute("class", "card_ph");
+            tmp_pw.setAttribute("src", "tttb");
+            tmp_pw.setAttribute("onclick", "show('cart" + String(rnm) + "')");
+            tmp_cr.appendChild(tmp_pw);
+            mm.appendChild(tmp_cr);
+        });
+
+        [1, 2, 3, 4].forEach(function() {
+            let mmm = document.getElementById('ghhd');
+            let rnm = getRandomInt(78);
+            do {
+              rnm = getRandomInt(78);
+            } while (exll.find((element) => element == rnm) != undefined);
+            exll.push(rnm);
+            let tmp_cr = document.createElement("div");
+            tmp_cr.setAttribute("id", "cart" + String(rnm) + "a");
+            tmp_cr.setAttribute("class", "card_item");
+
+            let tmp_pq = document.createElement("img");
+            tmp_pq.setAttribute("id", "cart" + String(rnm) + "m");
+            tmp_pq.setAttribute("class", "card_mph");
+            let tst = cart["cart" + String(rnm)].split(':')[0];
+            tmp_pq.setAttribute("src", "/tan/" + tst);
+            tmp_cr.appendChild(tmp_pq);
+
+            let tmp_pw = document.createElement("img");
+            tmp_pw.setAttribute("id", "cart" + String(rnm));
+            tmp_pw.setAttribute("class", "card_ph");
+            tmp_pw.setAttribute("src", "tttb");
+            tmp_pw.setAttribute("onclick", "show('cart" + String(rnm) + "')");
+            tmp_cr.appendChild(tmp_pw);
+            mmm.appendChild(tmp_cr);
+        });
+
+
+
+        var opacity = 0;
+        var intervalID = 0;
+
+        function sleep(ms) {
+          ms += new Date().getTime();
+          while (new Date() < ms){}
+        }
+
+
+        function show(itm) {
+            let prewcards = cards;
+            cards = cards + cart[itm].split(':')[1] + ", ";
+            console.log(cards.split(', '));
+            let umd = cards.split(', ');
+            let na = [];
+            umd.forEach(function(el) {
+               if ((el != '') && (el != ' ')) {
+                   na.push(el);
+               }
+            });
+
+            if (na.length == 3) {
+                let fake_wr = document.createElement("div");
+                fake_wr.setAttribute("id", "btn_wr");
+                fake_wr.setAttribute("class", "btn_wr");
+
+                let btnn = document.createElement("div");
+                btnn.setAttribute("id", "mbtn");
+                btnn.setAttribute("class", "mn_btn");
+                btnn.setAttribute("onclick", "snddt()");
+                btnn.innerHTML = "Вернуться";
+                fake_wr.appendChild(btnn);
+
+                document.getElementById('mnlt').appendChild(fake_wr);
+            }
+
+            if (na.length > 3) {
+                console.log('gfgfgfgfgfgfgfg');
+                cards = prewcards;
+                return false;
+            }
+
+            var body = document.getElementById(itm);
+            body.removeAttribute("onclick");
+            opacity = Number(window.getComputedStyle(body)
+                            .getPropertyValue("opacity"));
+                            console.log(11);
+
+            [1, 2, 3, 4, 5].forEach(function(el) {
+                opacity = opacity - 0.2;
+                body.style.opacity = opacity;
+            });
+
+            var byy = document.getElementById(itm + 'm');
+            op = Number(window.getComputedStyle(byy)
+                            .getPropertyValue("opacity"));
+                            console.log(op);
+            [1, 2, 3, 4, 5].forEach(function(el) {
+                op = op + 0.2;
+                byy.style.opacity = op;
+            });
+
+            var nd = document.getElementById(itm + 'a').setAttribute('class', 'card_item_user');
+
+
+        }
+
+
+
+        function snddt() {
+            let data = {
+                title: 'hui',
+                desc: 'bolshoi',
+                text: cards.slice(0,-2)
+            }
+            let tg = window.Telegram.WebApp;
+            tg.sendData(JSON.stringify(data));
+        }
+    </script>
+  </body>
+</html>
