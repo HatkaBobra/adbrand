@@ -31,7 +31,8 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS extends(
    username TEXT,
    fullname TEXT,
    join_date TIMESTAMP,
-   paid INT)
+   paid INT,
+   subs_dt TIMESTAMP)
 """)
 
 client = AsyncOpenAI(
@@ -55,12 +56,83 @@ async def askii(tt) -> None:
 bot = Bot(token='')
 
 async def main(app=None):
-    # class SCproduct(bot):
     dp = Dispatcher()
     router1 = Router()
 
+    scheduler = AsyncIOScheduler(timezone='UTC')
+    scheduler.start()
+
     class NatOrd(StatesGroup):
         gtinf = State()
+
+    async def shedul_remprem():
+        scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
+        scheduler.add_job(shedul_repre, 'cron', hour='1')
+        print('sheduled cours recalc')
+        await bot.send_message(chat_id=adm_id, text='Sheduller remprem Once per 24 hours in 1 AM')
+
+    async def shedul_repre():
+        cursor.execute(f"""SELECT * from extends where subs_dt != null""")
+        users = cursor.fetchall()
+        print(users)
+        for user in users:
+            nndt = str(datetime.datetime.fromtimestamp(user[5]).date()).split('-')
+            crdt = str(datetime.datetime.fromtimestamp(datetime.datetime.today().timestamp()).date()).split('-')
+
+            m = 0
+            d = 0
+            if nndt[1].startswith('0'):
+                m = nndt[1][1:]
+            else:
+                m = nndt[1]
+            if nndt[2].startswith('0'):
+                d = nndt[2][1:]
+            else:
+                d = nndt[2]
+            d1 = datetime.datetime(int(nndt[0]), int(m), int(d))
+            if crdt[1].startswith('0'):
+                m = crdt[1][1:]
+            else:
+                m = crdt[1]
+            if crdt[2].startswith('0'):
+                d = crdt[2][1:]
+            else:
+                d = crdt[2]
+            d2 = datetime.datetime(int(crdt[0]), int(m), int(d))
+
+            if (d1 > d2):
+                cursor.execute(f"UPDATE extends set subs_dt = '' where id = {user[0]}")
+                connector.commit()
+                cursor.execute(f"UPDATE extends set paid = 0 where id = {user[0]}")
+                connector.commit()
+                my_market = ''
+                my_secret = ''
+                my_prod = ''
+
+                builder = InlineKeyboardBuilder()
+                amns = ["990:Оплатить подпсику"]  # "11:тестовая",
+                for am in amns:
+                    shpid = user[0]
+                    amount = am.split(':')[0]
+                    rhash = f"{my_market}:{amount}:0:{my_secret}:Shp_id={shpid}:Shp_prd={my_prod}"
+                    # print()
+                    # print()
+                    # print(rhash)
+                    r = hashlib.md5(rhash.encode())
+
+                    urlpth = f"&Shp_id={shpid}&Shp_prd={my_prod}"
+
+                    builder.row(types.InlineKeyboardButton(
+                        text=am.split(':')[1],
+                        url=f'https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin={my_market}&OutSum={amount}&InvoiceID={my_bill}&Description=Покупка услуг{urlpth}&SignatureValue={r.hexdigest()}')
+                    )
+
+                await bot.send_message(chat_id=user[0], text=f'Ваша подписка закончилась.\n\nПрислал кнопку для оплаты',
+                                       reply_markup=builder.as_markup())
+        cursor.execute(f"""SELECT * from extends where subs_dt != null""")
+        nusers = cursor.fetchall()
+        # print(nusers)
+        await bot.send_message(chat_id=adm_id, text=f'{users} before\n{nusers} after remprem')
 
     async def shedul_remwish():
         nine_hours_from_now = datetime.datetime.now() + datetime.timedelta(minutes=30)
@@ -68,7 +140,6 @@ async def main(app=None):
         scheduler = AsyncIOScheduler(timezone='UTC')
         scheduler.start()
         print('sheduled cours recalc')
-        # await bot.send_message(chat_id=912266402, text='Sheduller remwish Once per 24 hours in 1 AM')
 
     async def shedul_recalc(spd):
         cursor.execute(f"""SELECT * from extends where id = {spd}""")
@@ -125,7 +196,7 @@ async def main(app=None):
                             (message.from_user.id, message.from_user.first_name, message.from_user.username, timestamp, 0))
             connector.commit()
 
-        await message.answer('Добро пожаловать! Я Ангелина Дулярова, создательница онлайн-платформы, посвященной женским темам саморазвития и самопознания.\n\nМой телеграм-канал — это пространство для женщин, стремящихся найти свое истинное предназначение, научиться саморефлексии и достигать целей в гармонии с собой.\n\nЯ приглашаю вас на путь глубокого понимания себя, внутренней гармонии и счастья. Здесь вы найдёте полезные практики, мотивирующие статьи и поддержку опытных специалистов, чтобы раскрыть свой потенциал и достичь успеха легко и уверенно.', reply_markup=keyboard)
+        await message.answer('Добро пожаловать! Я создательница онлайн-платформы, посвященной женским темам саморазвития и самопознания.\n\nМой телеграм-канал — это пространство для женщин, стремящихся найти свое истинное предназначение, научиться саморефлексии и достигать целей в гармонии с собой.\n\nЯ приглашаю вас на путь глубокого понимания себя, внутренней гармонии и счастья. Здесь вы найдёте полезные практики, мотивирующие статьи и поддержку опытных специалистов, чтобы раскрыть свой потенциал и достичь успеха легко и уверенно.', reply_markup=keyboard)
 
     @router1.message((F.text.lower() == 'подписаться на приватный канал'))
     async def subscr(message: Message, state: FSMContext):
@@ -147,9 +218,8 @@ async def main(app=None):
                 text=am.split(':')[1], url=f'https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin={my_market}&OutSum={amount}&InvoiceID={my_bill}&Description=desc{urlpth}&SignatureValue={r.hexdigest()}')
             )
 
-        scheduler = AsyncIOScheduler(timezone='UTC')
         nine_hours_from_now = datetime.datetime.now() + datetime.timedelta(minutes=30)
-        scheduler.start()
+
         scheduler.add_job(shedul_recalc, 'date', run_date=nine_hours_from_now, args=[message.from_user.id])
         await message.answer('Подписка на канал — всего 990 рублей.\n\nПрисоединяйтесь и начните преображаться уже сегодня!', reply_markup=builder.as_markup())
 
@@ -184,6 +254,7 @@ async def main(app=None):
 
     dp.include_router(router1)
     await shedul_remwish()
+    await shedul_remprem()
     await dp.start_polling(app)
 
 if __name__ == '__main__':
