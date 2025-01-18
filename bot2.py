@@ -105,7 +105,30 @@ async def main(app=None):
                 connector.commit()
                 cursor.execute(f"UPDATE extends set paid = 0 where id = {user[0]}")
                 connector.commit()
-                await bot.send_message(chat_id=user[0], text=f'Ваша подписка закончилась.')
+                my_market = ''
+                my_secret = ''
+                my_prod = ''
+
+                builder = InlineKeyboardBuilder()
+                amns = ["990:Оплатить подпсику"]  # "11:тестовая",
+                for am in amns:
+                    shpid = user[0]
+                    amount = am.split(':')[0]
+                    rhash = f"{my_market}:{amount}:0:{my_secret}:Shp_id={shpid}:Shp_prd={my_prod}"
+                    # print()
+                    # print()
+                    # print(rhash)
+                    r = hashlib.md5(rhash.encode())
+
+                    urlpth = f"&Shp_id={shpid}&Shp_prd={my_prod}"
+
+                    builder.row(types.InlineKeyboardButton(
+                        text=am.split(':')[1],
+                        url=f'https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin={my_market}&OutSum={amount}&InvoiceID={my_bill}&Description=Покупка услуг{urlpth}&SignatureValue={r.hexdigest()}')
+                    )
+
+                await bot.send_message(chat_id=user[0], text=f'Ваша подписка закончилась.\n\nПрислал кнопку для оплаты',
+                                       reply_markup=builder.as_markup())
         cursor.execute(f"""SELECT * from extends where subs_dt != null""")
         nusers = cursor.fetchall()
         # print(nusers)
@@ -173,7 +196,7 @@ async def main(app=None):
                             (message.from_user.id, message.from_user.first_name, message.from_user.username, timestamp, 0))
             connector.commit()
 
-        await message.answer('Добро пожаловать! Я Ангелина Дулярова, создательница онлайн-платформы, посвященной женским темам саморазвития и самопознания.\n\nМой телеграм-канал — это пространство для женщин, стремящихся найти свое истинное предназначение, научиться саморефлексии и достигать целей в гармонии с собой.\n\nЯ приглашаю вас на путь глубокого понимания себя, внутренней гармонии и счастья. Здесь вы найдёте полезные практики, мотивирующие статьи и поддержку опытных специалистов, чтобы раскрыть свой потенциал и достичь успеха легко и уверенно.', reply_markup=keyboard)
+        await message.answer('Добро пожаловать! Я создательница онлайн-платформы, посвященной женским темам саморазвития и самопознания.\n\nМой телеграм-канал — это пространство для женщин, стремящихся найти свое истинное предназначение, научиться саморефлексии и достигать целей в гармонии с собой.\n\nЯ приглашаю вас на путь глубокого понимания себя, внутренней гармонии и счастья. Здесь вы найдёте полезные практики, мотивирующие статьи и поддержку опытных специалистов, чтобы раскрыть свой потенциал и достичь успеха легко и уверенно.', reply_markup=keyboard)
 
     @router1.message((F.text.lower() == 'подписаться на приватный канал'))
     async def subscr(message: Message, state: FSMContext):
